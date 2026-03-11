@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIND CARE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #6ac5fe;
+            --secondary-color: #1a3c5e;
+            --background-color: rgba(255, 255, 255, 0.1);
+            --text-color: #fff;
+            --button-color: #6ac5fe;
+            --button-text-color: #1a3c5e;
+            --font-size: 16px;
+            --border-radius: 20px;
+            --animation-speed: 0.5s;
+        }
+
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('https://images.unsplash.com/photo-1593811167562-9cef47bf5a07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            font-size: var(--font-size);
+            overflow-x: hidden;
+        }
+
+        /* Animated background elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(106, 197, 254, 0.1);
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .floating-element:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 70%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 50%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .floating-element:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 20%;
+            left: 70%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.7;
+            }
+            33% {
+                transform: translateY(-20px) rotate(120deg);
+                opacity: 0.4;
+            }
+            66% {
+                transform: translateY(10px) rotate(240deg);
+                opacity: 0.9;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: var(--background-color);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(106, 197, 254, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 8s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                transform: rotate(45deg) translateX(-100%);
+            }
+            100% {
+                transform: rotate(45deg) translateX(100%);
+            }
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            animation: textGlow 3s infinite alternate;
+        }
+
+        @keyframes textGlow {
+            from {
+                text-shadow: 0 0 5px rgba(106, 197, 254, 0.5);
+            }
+            to {
+                text-shadow: 0 0 15px rgba(106, 197, 254, 0.8), 0 0 20px rgba(106, 197, 254, 0.6);
+            }
+        }
+
+        .tagline {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            color: #e0e0e0;
+            line-height: 1.6;
+            animation: fadeIn 1.5s ease-out 0.5s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .feature {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.8s ease-out both;
+        }
+
+        .feature:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .feature:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .feature:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .feature:hover::before {
+            left: 100%;
+        }
+
+        .feature:hover {
+            transform: translateY(-10px) scale(1.03);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover i {
+            transform: rotate(15deg) scale(1.2);
+        }
+
+        .feature h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 30px;
+            background: var(--button-color);
+            color: var(--button-text-color);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(106, 197, 254, 0.4);
+            min-width: 160px;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: bounceIn 1s ease-out 1s both;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background: #8fd3ff;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(106, 197, 254, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            box-shadow: none;
+            animation-delay: 1.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(106, 197, 254, 0.1);
+        }
+
+        .btn i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover i {
+            transform: translateX(5px);
+        }
+
+        .testimonial {
+            margin-top: 40px;
+            font-style: italic;
+            color: #d0e8ff;
+            padding: 20px;
+            border-left: 3px solid var(--primary-color);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0 10px 10px 0;
+            animation: fadeIn 2s ease-out 1.5s both;
+            position: relative;
+        }
+
+        .testimonial::after {
+            content: '"';
+            position: absolute;
+            bottom: -10px;
+            right: 20px;
+            font-size: 4rem;
+            color: var(--primary-color);
+            opacity: 0.3;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            animation: fadeIn 2s ease-out 2s both;
+        }
+
+        /* Style Editor Panel */
+        .style-editor {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            width: 300px;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            display: none;
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .style-editor h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .style-control {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .style-control label {
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .style-control input, .style-control select {
+            width: 150px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background: #333;
+            color: #fff;
+        }
+
+        .style-control input[type="color"] {
+            height: 30px;
+            padding: 0;
+        }
+
+        .toggle-editor {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-editor:hover {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .reset-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        /* Particle animation */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(106, 197, 254, 0.5);
+            border-radius: 50%;
+            animation: particleFloat 20s infinite linear;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .features {
+                flex-direction: column;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .style-editor {
+                width: 90%;
+                right: 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
+    <div class="particles" id="particles"></div>
+
+    <button class="toggle-editor" id="toggleEditor">
+        <i class="fas fa-palette"></i>
+    </button>
+
+    <div class="style-editor" id="styleEditor">
+        <h3>Style Customizer</h3>
+        <div class="style-control">
+            <label for="primaryColor">Primary Color:</label>
+            <input type="color" id="primaryColor" value="#6ac5fe">
+        </div>
+        <div class="style-control">
+            <label for="secondaryColor">Secondary Color:</label>
+            <input type="color" id="secondaryColor" value="#1a3c5e">
+        </div>
+        <div class="style-control">
+            <label for="backgroundColor">Background Opacity:</label>
+            <input type="range" id="backgroundColor" min="0" max="100" value="10">
+        </div>
+        <div class="style-control">
+            <label for="textColor">Text Color:</label>
+            <input type="color" id="textColor" value="#ffffff">
+        </div>
+        <div class="style-control">
+            <label for="buttonColor">Button Color:</label>
+            <input type="color" id="buttonColor" value="#6ac5fe">
+        </div>
+        <div class="style-control">
+            <label for="buttonTextColor">Button Text Color:</label>
+            <input type="color" id="buttonTextColor" value="#1a3c5e">
+        </div>
+        <div class="style-control">
+            <label for="fontSize">Font Size:</label>
+            <select id="fontSize">
+                <option value="14px">Small</option>
+                <option value="16px" selected>Medium</option>
+                <option value="18px">Large</option>
+                <option value="20px">X-Large</option>
+            </select>
+        </div>
+        <div class="style-control">
+            <label for="borderRadius">Border Radius:</label>
+            <select id="borderRadius">
+                <option value="10px">Small</option>
+                <option value="20px" selected>Medium</option>
+                <option value="30px">Large</option>
+                <option value="40px">X-Large</option>
+            </select>
+        </div>
+        <div class="style-control">
+            <label for="animationSpeed">Animation Speed:</label>
+            <select id="animationSpeed">
+                <option value="0.3s">Fast</option>
+                <option value="0.5s" selected>Medium</option>
+                <option value="0.8s">Slow</option>
+                <option value="1.2s">Very Slow</option>
+            </select>
+        </div>
+        <button class="reset-btn" id="resetStyles">Reset to Default</button>
+    </div>
+
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-brain"></i>
+        </div>
+        <h1>Personalized mental health chatbot</h1>
+        <p class="tagline">Your supportive companion for mood tracking, counseling suggestions, and daily self-care.</p>
+        
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-chart-line"></i>
+                <h3>Mood Tracking</h3>
+                <p>Monitor your emotional patterns over time</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-comments"></i>
+                <h3>24/7 Support</h3>
+                <p>Always available when you need someone to talk to</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-heart"></i>
+                <h3>Self-Care Tips</h3>
+                <p>Personalized recommendations for your wellbeing</p>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <a class="btn" href="{{ url_for('signup') }}">sign up</a>
+
+                <i class="fas fa-user-plus"></i>
+            </a>
+             <a class="btn" href="{{ url_for('login') }}">login</a>
+                <i class="fas fa-sign-in-alt"></i> 
+            </a>
+        </div>
+        
+        <div class="testimonial">
+            "This chatbot has been a game-changer for my mental health journey. It's like having a supportive friend available anytime I need."
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2023 Mental Health Chatbot. All rights reserved. | Privacy Policy | Terms of Service</p>
+    </footer>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 5 + 2;
+                const left = Math.random() * 100;
+                const animationDuration = Math.random() * 20 + 10;
+                const animationDelay = Math.random() * 20;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${left}vw`;
+                particle.style.animationDuration = `${animationDuration}s`;
+                particle.style.animationDelay = `${animationDelay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Toggle style editor visibility
+        document.getElementById('toggleEditor').addEventListener('click', function() {
+            const editor = document.getElementById('styleEditor');
+            editor.style.display = editor.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Get all style controls
+        const primaryColor = document.getElementById('primaryColor');
+        const secondaryColor = document.getElementById('secondaryColor');
+        const backgroundColor = document.getElementById('backgroundColor');
+        const textColor = document.getElementById('textColor');
+        const buttonColor = document.getElementById('buttonColor');
+        const buttonTextColor = document.getElementById('buttonTextColor');
+        const fontSize = document.getElementById('fontSize');
+        const borderRadius = document.getElementById('borderRadius');
+        const animationSpeed = document.getElementById('animationSpeed');
+        const resetBtn = document.getElementById('resetStyles');
+
+        // Update CSS variables when controls change
+        function updateStyles() {
+            document.documentElement.style.setProperty('--primary-color', primaryColor.value);
+            document.documentElement.style.setProperty('--secondary-color', secondaryColor.value);
+            document.documentElement.style.setProperty('--background-color', `rgba(255, 255, 255, ${backgroundColor.value/100})`);
+            document.documentElement.style.setProperty('--text-color', textColor.value);
+            document.documentElement.style.setProperty('--button-color', buttonColor.value);
+            document.documentElement.style.setProperty('--button-text-color', buttonTextColor.value);
+            document.documentElement.style.setProperty('--font-size', fontSize.value);
+            document.documentElement.style.setProperty('--border-radius', borderRadius.value);
+            document.documentElement.style.setProperty('--animation-speed', animationSpeed.value);
+        }
+
+        // Add event listeners to all controls
+        primaryColor.addEventListener('input', updateStyles);
+        secondaryColor.addEventListener('input', updateStyles);
+        backgroundColor.addEventListener('input', updateStyles);
+        textColor.addEventListener('input', updateStyles);
+        buttonColor.addEventListener('input', updateStyles);
+        buttonTextColor.addEventListener('input', updateStyles);
+        fontSize.addEventListener('change', updateStyles);
+        borderRadius.addEventListener('change', updateStyles);
+        animationSpeed.addEventListener('change', updateStyles);
+
+        // Reset to default styles
+        resetBtn.addEventListener('click', function() {
+            primaryColor.value = '#6ac5fe';
+            secondaryColor.value = '#1a3c5e';
+            backgroundColor.value = '10';
+            textColor.value = '#ffffff';
+            buttonColor.value = '#6ac5fe';
+            buttonTextColor.value = '#1a3c5e';
+            fontSize.value = '16px';
+            borderRadius.value = '20px';
+            animationSpeed.value = '0.5s';
+            updateStyles();
+        });
+
+        // Initialize with default styles and particles
+        updateStyles();
+        createParticles();
+    </script>
+</body>
+</html>

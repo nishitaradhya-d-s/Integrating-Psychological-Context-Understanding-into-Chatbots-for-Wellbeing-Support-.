@@ -1,0 +1,2814 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    :root {
+      --primary-color: #8BC6EC;
+      --secondary-color: #2c3e50;
+      --background-color: rgba(255, 255, 255, 0.05);
+      --text-color: #e8f4f8;
+      --button-color: #7db9e0;
+      --button-text-color: #2c3e50;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --header-bg: rgba(44, 62, 80, 0.3);
+      --animation-speed: 0.5s;
+      --robot-color: #7db9e0;
+      --danger-color: #ff6b6b;
+      --success-color: #51cf66;
+      --doctor-color: #9c88ff;
+      --game-color: #ff9f43;
+    }
+
+    body {
+      background: linear-gradient(rgba(25, 42, 86, 0.85), rgba(19, 32, 67, 0.9)), 
+                  url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 20px;
+      font-size: 18px;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Animated background elements */
+    .floating-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .floating-element {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(139, 198, 236, 0.03);
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .floating-element:nth-child(1) {
+      width: 120px;
+      height: 120px;
+      top: 15%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .floating-element:nth-child(2) {
+      width: 80px;
+      height: 80px;
+      top: 70%;
+      left: 85%;
+      animation-delay: 5s;
+    }
+
+    .floating-element:nth-child(3) {
+      width: 60px;
+      height: 60px;
+      top: 50%;
+      left: 15%;
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.3;
+      }
+      33% {
+        transform: translateY(-15px) rotate(120deg);
+        opacity: 0.1;
+      }
+      66% {
+        transform: translateY(8px) rotate(240deg);
+        opacity: 0.2;
+      }
+    }
+
+    /* Header with Avatar - FIXED */
+    .topbar {
+      background: var(--header-bg);
+      backdrop-filter: blur(15px);
+      padding: 15px 40px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      animation: slideDown 0.8s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-avatar-container {
+      position: relative;
+    }
+
+    .user-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--primary-color);
+      box-shadow: 0 0 25px rgba(139, 198, 236, 0.4);
+      background: linear-gradient(135deg, var(--primary-color), #9575cd);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .user-avatar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(139, 198, 236, 0.6);
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .avatar-initial {
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .avatar-upload-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      cursor: pointer;
+    }
+
+    .user-avatar-container:hover .avatar-upload-overlay {
+      opacity: 1;
+    }
+
+    .avatar-upload-overlay i {
+      font-size: 24px;
+      color: white;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .welcome-text {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-color);
+      letter-spacing: 0.5px;
+    }
+
+    .user-mood {
+      font-size: 0.9rem;
+      color: rgba(232, 244, 248, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .topbar a {
+      color: var(--text-color);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 400;
+      opacity: 0.8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar a:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .profile-btn {
+      position: relative;
+    }
+
+    .profile-btn input[type="file"] {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      left: 0;
+      top: 0;
+    }
+
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.4s ease;
+      animation: fadeInUp 0.8s ease-out;
+      position: relative;
+      overflow: hidden;
+      min-height: 300px;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(139, 198, 236, 0.02), transparent);
+      transform: rotate(45deg);
+      animation: shine 12s infinite linear;
+      pointer-events: none;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h3 {
+      color: var(--text-color);
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h4 {
+      color: var(--text-color);
+      margin: 20px 0 12px 0;
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    .card p {
+      line-height: 1.7;
+      margin-bottom: 15px;
+      color: rgba(232, 244, 248, 0.9);
+      font-weight: 300;
+      font-size: 1.05rem;
+    }
+
+    /* Daily Inspiration Section - FIXED */
+    .inspiration-section {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .quote-container {
+      position: relative;
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 15px;
+      border-left: 4px solid var(--primary-color);
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .quote-text {
+      font-size: 1.5rem !important;
+      line-height: 1.8 !important;
+      font-style: italic;
+      color: var(--text-color) !important;
+      font-weight: 400 !important;
+      margin-bottom: 10px !important;
+      transition: opacity 0.5s ease;
+    }
+
+    .quote-author {
+      text-align: right;
+      color: var(--primary-color) !important;
+      font-size: 1.1rem !important;
+      font-weight: 500 !important;
+      opacity: 0.9;
+    }
+
+    .quote-timer {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(139, 198, 236, 0.1);
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Joke of the Day - FIXED */
+    .joke-container {
+      padding: 20px;
+      background: rgba(156, 136, 255, 0.1);
+      border-radius: 15px;
+      border-left: 4px solid var(--doctor-color);
+      margin-top: 10px;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .joke-text {
+      font-size: 1.2rem !important;
+      line-height: 1.6 !important;
+      color: var(--text-color) !important;
+      margin-bottom: 10px !important;
+      transition: opacity 0.5s ease;
+    }
+
+    .joke-category {
+      text-align: right;
+      color: var(--doctor-color) !important;
+      font-size: 0.9rem !important;
+      font-style: italic;
+    }
+
+    .joke-controls {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .joke-btn {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: rgba(156, 136, 255, 0.2);
+      border: none;
+      color: var(--doctor-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .joke-btn:hover {
+      background: rgba(156, 136, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    /* Mood Tracker - FIXED */
+    .mood-tracker-container {
+      min-height: 500px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .current-mood-display {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+    }
+
+    .current-mood-emoji {
+      font-size: 3rem;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    .current-mood-text {
+      flex: 1;
+    }
+
+    .current-mood-text h5 {
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+      color: rgba(232, 244, 248, 0.8);
+    }
+
+    .current-mood-text p {
+      font-size: 1.3rem;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    .chat-mood-source {
+      font-size: 0.9rem;
+      color: rgba(232, 244, 248, 0.6);
+      margin-top: 5px;
+    }
+
+    /* Mood Chart Container */
+    .mood-chart-container {
+      height: 220px;
+      width: 100%;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    /* Mood History - FIXED EMOJI DISPLAY */
+    .mood-history-container {
+      margin-top: 20px;
+    }
+
+    .mood-history {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      overflow-x: auto;
+      padding: 15px 10px;
+      min-height: 120px;
+    }
+
+    .mood-day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 80px;
+      padding: 15px 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .mood-day:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-3px);
+      border-color: rgba(139, 198, 236, 0.2);
+    }
+
+    .mood-day-emoji {
+      font-size: 3rem !important;
+      margin-bottom: 8px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mood-day-label {
+      font-size: 0.9rem;
+      opacity: 0.7;
+      margin-bottom: 5px;
+    }
+
+    .mood-day-score {
+      font-size: 0.8rem;
+      color: var(--primary-color);
+      margin-top: 5px;
+      font-weight: 500;
+    }
+
+    /* Mood selector */
+    .mood-selector {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+      gap: 10px;
+    }
+
+    .mood-option {
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 15px 8px;
+      border-radius: 12px;
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .mood-option:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .mood-option.selected {
+      background: rgba(139, 198, 236, 0.15);
+      transform: translateY(-2px);
+      border-color: rgba(139, 198, 236, 0.3);
+    }
+
+    .mood-emoji {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mood-option div:last-child {
+      font-size: 1rem;
+      color: rgba(232, 244, 248, 0.8);
+      font-weight: 500;
+    }
+
+    /* Save Reflection - FIXED */
+    .reflection-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .saved-reflections {
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .reflection-item {
+      padding: 15px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      border-left: 3px solid var(--primary-color);
+      animation: slideInRight 0.5s ease-out;
+    }
+
+    .reflection-date {
+      font-size: 0.9rem;
+      color: rgba(232, 244, 248, 0.6);
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .reflection-content {
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* Emergency Helpline - FIXED */
+    .emergency-card {
+      background: rgba(255, 107, 107, 0.1) !important;
+      border: 1px solid rgba(255, 107, 107, 0.2) !important;
+    }
+
+    .emergency-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .emergency-item {
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .emergency-item:hover {
+      background: rgba(255, 107, 107, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .emergency-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: var(--danger-color);
+    }
+
+    .music-player {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .music-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .music-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      border: none;
+      color: var(--button-text-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .music-btn:hover {
+      transform: scale(1.1);
+      background: #8BC6EC;
+      box-shadow: 0 0 15px rgba(139, 198, 236, 0.4);
+    }
+
+    /* Mind Relaxing Game */
+    .game-card {
+      background: rgba(255, 159, 67, 0.1) !important;
+      border: 1px solid rgba(255, 159, 67, 0.2) !important;
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .game-cell {
+      aspect-ratio: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .game-cell:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+
+    .game-cell.selected {
+      background: rgba(255, 159, 67, 0.3);
+      border-color: var(--game-color);
+    }
+
+    .game-cell.matched {
+      background: rgba(51, 207, 102, 0.3);
+      border-color: var(--success-color);
+      cursor: default;
+    }
+
+    .game-stats {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .game-stat {
+      text-align: center;
+    }
+
+    .game-stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--game-color);
+    }
+
+    .game-stat-label {
+      font-size: 0.9rem;
+      color: rgba(232, 244, 248, 0.7);
+    }
+
+    /* Doctor Recommendations - RESTORED */
+    .doctor-card {
+      background: rgba(156, 136, 255, 0.1) !important;
+      border: 1px solid rgba(156, 136, 255, 0.2) !important;
+    }
+
+    .doctors-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 10px;
+      margin-top: 15px;
+    }
+
+    .doctor-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .doctor-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+      border-color: rgba(156, 136, 255, 0.3);
+    }
+
+    .doctor-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .doctor-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--doctor-color), #8BC6EC);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .doctor-info {
+      flex: 1;
+    }
+
+    .doctor-name {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: var(--text-color);
+      margin-bottom: 5px;
+    }
+
+    .doctor-specialization {
+      font-size: 1rem;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .doctor-hospital {
+      font-size: 0.95rem;
+      color: rgba(232, 244, 248, 0.7);
+      margin-bottom: 8px;
+    }
+
+    .doctor-details {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .doctor-detail {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.9rem;
+      color: rgba(232, 244, 248, 0.8);
+    }
+
+    .doctor-detail i {
+      color: var(--doctor-color);
+    }
+
+    /* Activity Feed - FIXED */
+    .activity-feed {
+      grid-column: span 2;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      animation: slideInRight 0.5s ease-out;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(139, 198, 236, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-color);
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-time {
+      font-size: 0.9rem;
+      color: rgba(232, 244, 248, 0.6);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      background: var(--button-color);
+      color: var(--button-text-color);
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(125, 185, 224, 0.2);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover {
+      background: #8BC6EC;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(125, 185, 224, 0.3);
+    }
+
+    .btn i {
+      margin-right: 10px;
+    }
+
+    /* Textarea */
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-color);
+      font-size: 1rem;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    textarea::placeholder {
+      color: rgba(232, 244, 248, 0.5);
+    }
+
+    /* Robot Chat Button */
+    .robot-chat-btn {
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      width: 70px;
+      height: 70px;
+      background: var(--robot-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(125, 185, 224, 0.3);
+      transition: all 0.4s ease;
+      z-index: 100;
+      animation: floatRobot 4s ease-in-out infinite;
+      opacity: 0.9;
+    }
+
+    @keyframes floatRobot {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .robot-chat-btn:hover {
+      transform: scale(1.05);
+      opacity: 1;
+      animation: none;
+    }
+
+    .robot-body {
+      width: 40px;
+      height: 50px;
+      background: white;
+      border-radius: 20px 20px 8px 8px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .robot-head {
+      width: 32px;
+      height: 24px;
+      background: white;
+      border-radius: 12px 12px 4px 4px;
+      position: absolute;
+      top: -16px;
+    }
+
+    .robot-eye {
+      width: 6px;
+      height: 6px;
+      background: var(--robot-color);
+      border-radius: 50%;
+      position: absolute;
+      top: 6px;
+    }
+
+    .robot-eye.left {
+      left: 6px;
+    }
+
+    .robot-eye.right {
+      right: 6px;
+    }
+
+    .robot-mouth {
+      width: 12px;
+      height: 4px;
+      background: var(--robot-color);
+      border-radius: 2px;
+      position: absolute;
+      bottom: 4px;
+    }
+
+    /* Chat Modal - YOUR CHATBOT */
+    .chat-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(19, 32, 67, 0.95);
+      backdrop-filter: blur(10px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .chat-window {
+      width: 90%;
+      max-width: 500px;
+      height: 70%;
+      background: rgba(44, 62, 80, 0.8);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      animation: scaleIn 0.3s ease-out;
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .chat-header {
+      background: rgba(44, 62, 80, 0.9);
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-header h4 {
+      margin: 0;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+    }
+
+    .robot-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--robot-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--button-text-color);
+      font-size: 1.1rem;
+    }
+
+    .chat-header button {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.7;
+    }
+
+    .chat-header button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      opacity: 1;
+    }
+
+    .chat-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .bubble {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      animation: bubbleAppear 0.3s ease-out;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    @keyframes bubbleAppear {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .bubble.user {
+      align-self: flex-end;
+      background: var(--button-color);
+      color: var(--button-text-color);
+      border-bottom-right-radius: 8px;
+    }
+
+    .bubble.bot {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-color);
+      border-bottom-left-radius: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .bot-avatar {
+      width: 28px;
+      height: 28px;
+      background: var(--robot-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--button-text-color);
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .chat-input {
+      padding: 20px;
+      display: flex;
+      gap: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(44, 62, 80, 0.9);
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 12px 20px;
+      border-radius: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-color);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .chat-input input::placeholder {
+      color: rgba(232, 244, 248, 0.5);
+    }
+
+    .chat-input button {
+      padding: 12px 24px;
+      border-radius: 25px;
+      border: none;
+      background: var(--button-color);
+      color: var(--button-text-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .chat-input button:hover {
+      background: #8BC6EC;
+      transform: scale(1.05);
+    }
+
+    /* Voice Recording */
+    .voice-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .voice-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: var(--danger-color);
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .voice-btn:hover {
+      background: #ff5252;
+      transform: scale(1.1);
+    }
+
+    .voice-btn.listening {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+      
+      .activity-feed {
+        grid-column: span 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+      }
+      
+      .topbar {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        padding: 20px;
+      }
+      
+      .user-info {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .nav-links {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      
+      .emergency-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .music-controls {
+        justify-content: center;
+      }
+      
+      .mood-selector {
+        flex-wrap: wrap;
+      }
+      
+      .mood-option {
+        flex: 0 0 calc(50% - 10px);
+        margin-bottom: 10px;
+      }
+      
+      .chat-window {
+        width: 95%;
+        height: 85%;
+      }
+      
+      .robot-chat-btn {
+        bottom: 25px;
+        right: 25px;
+        width: 60px;
+        height: 60px;
+      }
+      
+      .doctor-details {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .game-grid {
+        max-width: 280px;
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body class="dashboard">
+  <div class="floating-elements">
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="user-info">
+      <div class="user-avatar-container">
+        <div class="user-avatar" id="userAvatar" onclick="openAvatarUpload()">
+          <div class="avatar-initial" id="avatarInitial">{{ session.get('name','User')[0] }}</div>
+          <img id="avatarImage" src="" alt="User Avatar">
+        </div>
+        <div class="avatar-upload-overlay" onclick="openAvatarUpload()">
+          <i class="fas fa-camera"></i>
+        </div>
+        <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
+      </div>
+      <div class="user-details">
+        <div class="welcome-text">Welcome back, {{ session.get('name','User') }} 💖</div>
+        <div class="user-mood" id="currentMoodDisplay">
+          <span id="moodEmoji">😊</span>
+          <span id="moodText">Feeling Good</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="nav-links">
+      <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
+      <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </header>
+  
+  <main class="grid">
+    <!-- Daily Inspiration Section - FIXED -->
+    <section class="card">
+      <h3><i class="fas fa-brain"></i> Daily Inspiration</h3>
+      <div class="inspiration-section">
+        <div class="quote-container">
+          <div class="quote-timer">
+            <i class="fas fa-clock"></i>
+            <span id="quoteTimer">02:00</span>
+          </div>
+          <p class="quote-text" id="quoteText">"Believe you can and you're halfway there."</p>
+          <p class="quote-author" id="quoteAuthor">- Theodore Roosevelt</p>
+        </div>
+        
+        <div class="joke-container">
+          <div class="joke-controls">
+            <button class="joke-btn" onclick="speakJoke()" title="Listen to joke">
+              <i class="fas fa-volume-up"></i>
+            </button>
+          </div>
+          <p class="joke-text" id="jokeText">Why don't scientists trust atoms? Because they make up everything! 🤣</p>
+          <p class="joke-category" id="jokeCategory">Science Joke</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 15px;">
+          <button class="btn" onclick="speakCurrentContent()">
+            <i class="fas fa-volume-up"></i> Listen to Inspiration & Joke
+          </button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Mood Tracker - CHATBOT INTEGRATED -->
+    <section class="card mood-tracker-container">
+      <h3><i class="fas fa-chart-line"></i> Mood Tracker</h3>
+      
+      <div class="current-mood-display">
+        <div class="current-mood-emoji" id="currentMoodEmoji">😊</div>
+        <div class="current-mood-text">
+          <h5>Current Mood</h5>
+          <p id="currentMoodLabel">Happy</p>
+          <p class="chat-mood-source" id="moodSource">Based on manual selection</p>
+        </div>
+      </div>
+      
+      <div class="mood-chart-container">
+        <canvas id="moodChart"></canvas>
+      </div>
+      
+      <h4>How are you feeling right now?</h4>
+      <div class="mood-selector">
+        <div class="mood-option" data-mood="1" onclick="logMood(1, 'manual')">
+          <div class="mood-emoji">😢</div>
+          <div>Sad</div>
+        </div>
+        <div class="mood-option" data-mood="2" onclick="logMood(2, 'manual')">
+          <div class="mood-emoji">😐</div>
+          <div>Neutral</div>
+        </div>
+        <div class="mood-option" data-mood="3" onclick="logMood(3, 'manual')">
+          <div class="mood-emoji">😊</div>
+          <div>Happy</div>
+        </div>
+        <div class="mood-option" data-mood="4" onclick="logMood(4, 'manual')">
+          <div class="mood-emoji">😁</div>
+          <div>Great</div>
+        </div>
+      </div>
+      
+      <div class="mood-history-container">
+        <h4>Weekly Mood History</h4>
+        <div class="mood-history" id="moodHistory">
+          <!-- Will be populated by JS -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- Save Reflection - FIXED -->
+    <section class="card">
+      <h3><i class="fas fa-heart"></i> Today's Reflection</h3>
+      <div class="reflection-container">
+        <p>Write 3 good things that happened today — small wins count!</p>
+        <textarea id="reflectionText" placeholder="I'm grateful for..."></textarea>
+        <button class="btn" onclick="saveReflection()"><i class="fas fa-save"></i> Save Reflection</button>
+        
+        <div class="saved-reflections" id="savedReflections">
+          <h4>Recent Reflections</h4>
+          <!-- Reflections will appear here -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- Emergency Helpline - FIXED -->
+    <section class="card emergency-card">
+      <h3><i class="fas fa-phone-alt"></i> Support & Resources</h3>
+      
+      <div class="emergency-grid">
+        <div class="emergency-item" onclick="callEmergency('1800-599-0019')">
+          <div class="emergency-icon"><i class="fas fa-phone"></i></div>
+          <div>Emergency Helpline</div>
+          <small>24/7 Support</small>
+        </div>
+        
+        <div class="emergency-item" onclick="openResources()">
+          <div class="emergency-icon"><i class="fas fa-first-aid"></i></div>
+          <div>Emergency Resources</div>
+          <small>Quick Help</small>
+        </div>
+        
+        <div class="emergency-item" onclick="window.open('https://www.youtube.com/results?search_query=guided+meditation', '_blank')">
+          <div class="emergency-icon"><i class="fab fa-youtube"></i></div>
+          <div>Meditation Videos</div>
+          <small>Guided Sessions</small>
+        </div>
+      </div>
+      
+      <div class="music-player">
+        <h4><i class="fas fa-music"></i> Relaxing Music</h4>
+        <div class="music-controls">
+          <button class="music-btn" onclick="playMusic('calm')">
+            <i class="fas fa-play"></i>
+          </button>
+          <span>Calm Meditation</span>
+          <button class="music-btn" onclick="playMusic('focus')">
+            <i class="fas fa-play"></i>
+          </button>
+          <span>Focus Music</span>
+          <button class="music-btn" onclick="playMusic('sleep')">
+            <i class="fas fa-play"></i>
+          </button>
+          <span>Sleep Sounds</span>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Mind Relaxing Game -->
+    <section class="card game-card">
+      <h3><i class="fas fa-gamepad"></i> Mind Relaxing Game</h3>
+      <p>Match pairs of emojis to relax your mind! 🎮</p>
+      
+      <div class="game-container">
+        <div class="game-grid" id="gameGrid">
+          <!-- Game cells will be generated by JavaScript -->
+        </div>
+        
+        <div class="game-stats">
+          <div class="game-stat">
+            <div class="game-stat-value" id="movesCount">0</div>
+            <div class="game-stat-label">Moves</div>
+          </div>
+          <div class="game-stat">
+            <div class="game-stat-value" id="matchesCount">0</div>
+            <div class="game-stat-label">Matches</div>
+          </div>
+          <div class="game-stat">
+            <div class="game-stat-value" id="timer">60</div>
+            <div class="game-stat-label">Seconds</div>
+          </div>
+        </div>
+        
+        <button class="btn" onclick="resetGame()" style="background: var(--game-color);">
+          <i class="fas fa-redo"></i> New Game
+        </button>
+      </div>
+    </section>
+    
+    <!-- Doctor Recommendations - RESTORED WITH 15+ DOCTORS -->
+    <section class="card doctor-card">
+      <h3><i class="fas fa-user-md"></i> Recommended Specialists</h3>
+      <p>Find mental health professionals near you</p>
+      
+      <div class="doctors-list" id="doctorsList">
+        <!-- Doctors will be loaded here -->
+      </div>
+      
+      <div style="text-align: center; margin-top: 20px;">
+        <button class="btn" onclick="refreshDoctors()" style="background: var(--doctor-color);">
+          <i class="fas fa-sync"></i> Refresh Doctors List
+        </button>
+      </div>
+    </section>
+    
+    <!-- Activity Feed - FIXED -->
+    <section class="card activity-feed">
+      <h3><i class="fas fa-rss"></i> Recent Activity</h3>
+      <div id="activityFeed">
+        <!-- Real-time activities will appear here -->
+      </div>
+      <button class="btn" onclick="clearActivities()" style="margin-top: 15px; background: rgba(255,255,255,0.1); color: var(--text-color);">
+        <i class="fas fa-trash"></i> Clear Activities
+      </button>
+    </section>
+  </main>
+  
+  <!-- Robot Chat Button -->
+  <div class="robot-chat-btn" onclick="openChat()">
+    <div class="robot-head">
+      <div class="robot-eye left"></div>
+      <div class="robot-eye right"></div>
+    </div>
+    <div class="robot-body">
+      <div class="robot-mouth"></div>
+    </div>
+  </div>
+  
+  <!-- Chat Modal - YOUR CHATBOT -->
+  <div id="chatModal" class="chat-modal">
+    <div class="chat-window">
+      <div class="chat-header">
+        <h4>
+          <div class="robot-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          Mental Health Assistant
+        </h4>
+        <button onclick="closeChat()"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="chatArea" class="chat-area">
+        <!-- Initial message will be added by chatbot -->
+      </div>
+      <div class="chat-input">
+        <input id="chatInput" placeholder="Type your message or use voice...">
+        <div class="voice-controls">
+          <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceRecording()">
+            <i class="fas fa-microphone"></i>
+          </button>
+        </div>
+        <button onclick="sendChat()"><i class="fas fa-paper-plane"></i> Send</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Initialize variables
+let currentMood = 3;
+let chatHistory = [];
+let isRecording = false;
+let recognition = null;
+let quoteTimerSeconds = 120; // 2 minutes
+let jokeTimerSeconds = 86400; // 24 hours
+let gameInterval;
+let gameTime = 60;
+let gameMoves = 0;
+let gameMatches = 0;
+let selectedCells = [];
+let matchedCells = [];
+let emojiPairs = ['😊', '😢', '😎', '🤔', '🎮', '🌈', '⭐', '🎯', '❤️', '🎵', '🐶', '🐱', '☀️', '🌙', '🍎'];
+
+// Database of quotes and jokes
+const quotesDatabase = [
+  { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+  { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+  { text: "Your present circumstances don't determine where you can go; they merely determine where you start.", author: "Nido Qubein" },
+  { text: "The mind is everything. What you think you become.", author: "Buddha" },
+  { text: "It's not whether you get knocked down, it's whether you get up.", author: "Vince Lombardi" },
+  { text: "Mental health is not a destination, but a process.", author: "Noam Shpancer" },
+  { text: "You are stronger than you seem, braver than you believe, and smarter than you think.", author: "A.A. Milne" },
+  { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela" },
+  { text: "What lies behind us and what lies before us are tiny matters compared to what lies within us.", author: "Ralph Waldo Emerson" },
+  { text: "You don't have to be great to start, but you have to start to be great.", author: "Zig Ziglar" }
+];
+
+const jokesDatabase = [
+  { text: "Why don't scientists trust atoms? Because they make up everything! 🤣", category: "Science Joke" },
+  { text: "I told my wife she was drawing her eyebrows too high. She looked surprised. 😲", category: "Pun" },
+  { text: "Why did the scarecrow win an award? He was outstanding in his field! 🌾", category: "Farm Joke" },
+  { text: "I'm reading a book on anti-gravity. It's impossible to put down! 📚", category: "Book Joke" },
+  { text: "Why don't eggs tell jokes? They'd crack each other up! 🥚", category: "Food Joke" },
+  { text: "What do you call a fake noodle? An impasta! 🍝", category: "Food Joke" },
+  { text: "Why did the math book look sad? Because it had too many problems. 📖", category: "Math Joke" },
+  { text: "What do you call a bear with no teeth? A gummy bear! 🐻", category: "Animal Joke" },
+  { text: "Why don't skeletons fight each other? They don't have the guts. 💀", category: "Halloween Joke" },
+  { text: "What do you call a sleeping bull? A bulldozer! 🐂", category: "Animal Joke" }
+];
+
+// Doctor Database - 15+ DOCTORS
+const doctorsDatabase = [
+  { id: 1, name: "Dr. Sarah Johnson", specialization: "Clinical Psychologist", hospital: "MindCare Mental Health Center", experience: "12 years", rating: 4.8, contact: "sarah.j@mindcare.com", phone: "+1 (555) 123-4567", available: true, areas: ["Anxiety", "Depression", "Stress Management"] },
+  { id: 2, name: "Dr. Michael Chen", specialization: "Psychiatrist", hospital: "City General Hospital", experience: "15 years", rating: 4.9, contact: "mchen@cityhospital.org", phone: "+1 (555) 987-6543", available: true, areas: ["Medication Management", "Mood Disorders", "PTSD"] },
+  { id: 3, name: "Dr. Priya Sharma", specialization: "Counseling Psychologist", hospital: "Wellness Therapy Center", experience: "8 years", rating: 4.7, contact: "priya@wellnesstherapy.com", phone: "+1 (555) 456-7890", available: true, areas: ["Relationship Issues", "Self-esteem", "Career Counseling"] },
+  { id: 4, name: "Dr. Robert Kim", specialization: "Child Psychologist", hospital: "Children's Mental Health Institute", experience: "10 years", rating: 4.6, contact: "rkim@childmentalhealth.org", phone: "+1 (555) 234-5678", available: true, areas: ["ADHD", "Autism", "Childhood Trauma"] },
+  { id: 5, name: "Dr. Elena Rodriguez", specialization: "Trauma Specialist", hospital: "Healing Minds Center", experience: "14 years", rating: 4.9, contact: "elena@healingminds.com", phone: "+1 (555) 876-5432", available: true, areas: ["Trauma", "Grief Counseling", "Anxiety Disorders"] },
+  { id: 6, name: "Dr. James Wilson", specialization: "Addiction Psychiatrist", hospital: "Recovery Pathways Center", experience: "11 years", rating: 4.7, contact: "jwilson@recoverypath.org", phone: "+1 (555) 345-6789", available: true, areas: ["Substance Abuse", "Behavioral Addiction", "Relapse Prevention"] },
+  { id: 7, name: "Dr. Lisa Martinez", specialization: "Geriatric Psychiatrist", hospital: "Golden Years Mental Health", experience: "13 years", rating: 4.8, contact: "lmartinez@goldenyears.com", phone: "+1 (555) 567-8901", available: true, areas: ["Elderly Mental Health", "Dementia Care", "Late-life Depression"] },
+  { id: 8, name: "Dr. David Brown", specialization: "Sports Psychologist", hospital: "Peak Performance Institute", experience: "9 years", rating: 4.5, contact: "dbrown@peakperformance.com", phone: "+1 (555) 678-9012", available: true, areas: ["Performance Anxiety", "Motivation", "Team Dynamics"] },
+  { id: 9, name: "Dr. Samantha Lee", specialization: "Eating Disorder Specialist", hospital: "Healthy Body Mind Clinic", experience: "7 years", rating: 4.6, contact: "slee@healthymind.com", phone: "+1 (555) 789-0123", available: true, areas: ["Eating Disorders", "Body Image", "Nutrition Counseling"] },
+  { id: 10, name: "Dr. Thomas Anderson", specialization: "Neuropsychologist", hospital: "Brain Health Institute", experience: "16 years", rating: 4.9, contact: "tanderson@brainhealth.org", phone: "+1 (555) 890-1234", available: true, areas: ["Brain Injury", "Memory Disorders", "Cognitive Rehabilitation"] },
+  { id: 11, name: "Dr. Rachel Green", specialization: "Couples Therapist", hospital: "Relationship Harmony Center", experience: "10 years", rating: 4.7, contact: "rgreen@relationshipharmony.com", phone: "+1 (555) 901-2345", available: true, areas: ["Couples Counseling", "Marriage Therapy", "Family Dynamics"] },
+  { id: 12, name: "Dr. Kevin Patel", specialization: "Forensic Psychologist", hospital: "Legal Minds Associates", experience: "14 years", rating: 4.8, contact: "kpatel@legalminds.com", phone: "+1 (555) 012-3456", available: true, areas: ["Legal Consultation", "Criminal Psychology", "Expert Testimony"] },
+  { id: 13, name: "Dr. Olivia Taylor", specialization: "Sleep Disorder Specialist", hospital: "Sleep Well Clinic", experience: "8 years", rating: 4.6, contact: "otaylor@sleepwell.com", phone: "+1 (555) 123-7890", available: true, areas: ["Insomnia", "Sleep Apnea", "Circadian Rhythm Disorders"] },
+  { id: 14, name: "Dr. Benjamin Carter", specialization: "Occupational Psychologist", hospital: "Workplace Wellness Center", experience: "12 years", rating: 4.7, contact: "bcarter@workplacewellness.com", phone: "+1 (555) 234-8901", available: true, areas: ["Work Stress", "Burnout", "Career Transitions"] },
+  { id: 15, name: "Dr. Mia Rodriguez", specialization: "LGBTQ+ Mental Health Specialist", hospital: "Pride Counseling Center", experience: "9 years", rating: 4.9, contact: "mrodriguez@pridecounseling.com", phone: "+1 (555) 345-9012", available: true, areas: ["LGBTQ+ Issues", "Gender Identity", "Coming Out Support"] }
+];
+
+// Initialize from backend data
+const sentiments = {{ sentiment_points|tojson|safe if sentiment_points else '[]' }};
+const reflections = {{ reflections|tojson|safe if reflections else '[]' }};
+const userName = "{{ session.get('name', 'User') }}";
+
+// ==================== VOICE INPUT FUNCTIONS ====================
+function toggleVoiceRecording() {
+  const voiceBtn = document.getElementById('voiceBtn');
+  
+  if (!isRecording) {
+    // Start recording
+    startVoiceRecognition();
+    voiceBtn.classList.add('listening');
+    voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
+    isRecording = true;
+  } else {
+    // Stop recording
+    stopVoiceRecognition();
+    voiceBtn.classList.remove('listening');
+    voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+    isRecording = false;
+  }
+}
+
+function startVoiceRecognition() {
+  // Check if browser supports Web Speech API
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    alert('Voice recognition is not supported in this browser. Try Chrome or Edge.');
+    return;
+  }
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  
+  // Configure recognition
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+  
+  recognition.onstart = function() {
+    console.log('Voice recognition started');
+    addActivity('Started voice recording for chatbot', 'chat');
+  };
+  
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById('chatInput').value = transcript;
+    
+    // Auto-send after voice input
+    setTimeout(() => {
+      sendChat();
+    }, 500);
+  };
+  
+  recognition.onerror = function(event) {
+    console.error('Voice recognition error:', event.error);
+    if (event.error === 'not-allowed') {
+      alert('Please allow microphone access for voice input.');
+    }
+    // Reset button state
+    const voiceBtn = document.getElementById('voiceBtn');
+    voiceBtn.classList.remove('listening');
+    voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+    isRecording = false;
+  };
+  
+  recognition.onend = function() {
+    console.log('Voice recognition ended');
+    if (isRecording) {
+      toggleVoiceRecording(); // Reset button state
+    }
+  };
+  
+  recognition.start();
+}
+
+function stopVoiceRecognition() {
+  if (recognition) {
+    recognition.stop();
+  }
+}
+
+// ==================== AVATAR FUNCTIONS ====================
+function loadAvatar() {
+  // Try to get avatar from localStorage first
+  let savedAvatar = localStorage.getItem('userAvatar');
+  
+  // If not in localStorage, try to get from backend/user session
+  if (!savedAvatar) {
+    // Check if there's an avatar in sessionStorage (from profile page)
+    savedAvatar = sessionStorage.getItem('userAvatar');
+  }
+  
+  const avatarImg = document.getElementById('avatarImage');
+  const avatarInitial = document.getElementById('avatarInitial');
+  
+  if (savedAvatar) {
+    avatarImg.src = savedAvatar;
+    avatarImg.style.display = 'block';
+    avatarInitial.style.display = 'none';
+    console.log('Avatar loaded from storage:', savedAvatar.substring(0, 50) + '...');
+  } else {
+    // Fallback to initial
+    avatarImg.style.display = 'none';
+    avatarInitial.style.display = 'flex';
+    avatarInitial.textContent = userName.charAt(0).toUpperCase();
+  }
+}
+
+// Avatar Upload Function - FIXED
+function openAvatarUpload() {
+  document.getElementById('avatarUpload').click();
+}
+
+function uploadAvatar(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  // Check file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('File size should be less than 5MB');
+    return;
+  }
+  
+  // Check file type
+  if (!file.type.match('image.*')) {
+    alert('Please select an image file');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const avatarImg = document.getElementById('avatarImage');
+    const avatarInitial = document.getElementById('avatarInitial');
+    
+    avatarImg.src = e.target.result;
+    avatarImg.style.display = 'block';
+    avatarInitial.style.display = 'none';
+    
+    // Save to localStorage AND sessionStorage
+    localStorage.setItem('userAvatar', e.target.result);
+    sessionStorage.setItem('userAvatar', e.target.result);
+    
+    console.log('Avatar saved to storage:', e.target.result.substring(0, 50) + '...');
+    
+    // Show success message
+    addActivity('Avatar updated successfully!', 'user');
+    
+    // Send to backend if needed
+    sendAvatarToBackend(e.target.result);
+  };
+  
+  reader.readAsDataURL(file);
+}
+
+function sendAvatarToBackend(avatarData) {
+  // Send to your backend if you have an endpoint
+  fetch('/api/upload_avatar', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ avatar: avatarData })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Avatar saved to backend:', data);
+  })
+  .catch(error => {
+    console.error('Error saving avatar to backend:', error);
+  });
+}
+
+// Setup avatar synchronization between tabs/pages
+function setupAvatarSync() {
+  // Listen for localStorage changes from other tabs/pages
+  window.addEventListener('storage', function(event) {
+    if (event.key === 'userAvatar') {
+      console.log('Avatar updated from another tab');
+      loadAvatar();
+      addActivity('Avatar updated from another tab', 'user');
+    }
+  });
+  
+  // Also check sessionStorage (for profile page updates)
+  window.addEventListener('storage', function(event) {
+    if (event.key === 'userAvatar') {
+      loadAvatar();
+    }
+  });
+  
+  // Load avatar when page becomes visible (in case it was updated in another tab)
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      loadAvatar();
+    }
+  });
+}
+
+// ==================== MOOD CHART ====================
+function initializeMoodChart() {
+  const ctx = document.getElementById('moodChart').getContext('2d');
+  
+  // Get mood data from localStorage
+  let allMoods = JSON.parse(localStorage.getItem('allMoods') || '[]');
+  
+  let moodData = [];
+  let timeLabels = [];
+  
+  if (allMoods.length > 0) {
+    // Get last 8 moods
+    const recentMoods = allMoods.slice(-8);
+    recentMoods.forEach(m => {
+      moodData.push(m.mood);
+      const date = new Date(m.timestamp);
+      timeLabels.push(date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+    });
+  } else {
+    // Generate sample data
+    const now = new Date();
+    for (let i = 7; i >= 0; i--) {
+      const time = new Date(now.getTime() - (i * 2 * 60 * 60 * 1000));
+      timeLabels.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+      moodData.push(Math.floor(Math.random() * 4) + 1);
+    }
+  }
+  
+  // Create gradient
+  const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+  gradient.addColorStop(0, 'rgba(139, 198, 236, 0.4)');
+  gradient.addColorStop(1, 'rgba(139, 198, 236, 0.05)');
+  
+  // Create chart
+  window.moodChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: timeLabels,
+      datasets: [{
+        label: 'Mood Level',
+        data: moodData,
+        fill: true,
+        backgroundColor: gradient,
+        borderColor: 'rgba(139, 198, 236, 0.8)',
+        tension: 0.4,
+        pointBackgroundColor: function(context) {
+          const value = context.dataset.data[context.dataIndex];
+          const colors = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff'];
+          return colors[value - 1] || colors[2];
+        },
+        pointBorderColor: 'rgba(255, 255, 255, 0.8)',
+        pointBorderWidth: 3,
+        pointRadius: 8,
+        pointHoverRadius: 12
+      }]
+    },
+    options: { 
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: { 
+        y: { 
+          min: 0.5, 
+          max: 4.5,
+          grid: {
+            color: 'rgba(255, 255, 255, 0.05)',
+            drawBorder: false
+          },
+          ticks: {
+            color: 'rgba(232, 244, 248, 0.6)',
+            callback: function(value) {
+              if (value === 1) return '😢';
+              if (value === 2) return '😐';
+              if (value === 3) return '😊';
+              if (value === 4) return '😁';
+              return '';
+            },
+            stepSize: 1,
+            font: {
+              size: 24
+            }
+          }
+        },
+        x: {
+          grid: {
+            color: 'rgba(255, 255, 255, 0.05)',
+            drawBorder: false
+          },
+          ticks: {
+            color: 'rgba(232, 244, 248, 0.6)',
+            maxRotation: 0
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const value = context.raw;
+              let label = 'Mood: ';
+              if (value === 1) label += 'Sad 😢';
+              else if (value === 2) label += 'Neutral 😐';
+              else if (value === 3) label += 'Happy 😊';
+              else if (value === 4) label += 'Great 😁';
+              return label;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// ==================== QUOTE AND JOKE SYSTEM ====================
+let quoteInterval;
+let jokeInterval;
+
+function updateQuote() {
+  const randomQuote = quotesDatabase[Math.floor(Math.random() * quotesDatabase.length)];
+  
+  // Fade animation
+  const quoteText = document.getElementById('quoteText');
+  const quoteAuthor = document.getElementById('quoteAuthor');
+  
+  quoteText.style.opacity = '0';
+  quoteAuthor.style.opacity = '0';
+  
+  setTimeout(() => {
+    quoteText.textContent = `"${randomQuote.text}"`;
+    quoteAuthor.textContent = `- ${randomQuote.author}`;
+    
+    quoteText.style.opacity = '1';
+    quoteAuthor.style.opacity = '1';
+    
+    addActivity('New motivational quote loaded', 'info');
+  }, 500);
+}
+
+function updateJoke() {
+  const randomJoke = jokesDatabase[Math.floor(Math.random() * jokesDatabase.length)];
+  
+  // Fade animation
+  const jokeText = document.getElementById('jokeText');
+  const jokeCategory = document.getElementById('jokeCategory');
+  
+  jokeText.style.opacity = '0';
+  jokeCategory.style.opacity = '0';
+  
+  setTimeout(() => {
+    jokeText.textContent = randomJoke.text;
+    jokeCategory.textContent = randomJoke.category;
+    
+    jokeText.style.opacity = '1';
+    jokeCategory.style.opacity = '1';
+    
+    addActivity('New joke of the day loaded', 'info');
+  }, 500);
+}
+
+function startQuoteTimer() {
+  clearInterval(quoteInterval);
+  
+  quoteInterval = setInterval(() => {
+    quoteTimerSeconds--;
+    
+    const minutes = Math.floor(quoteTimerSeconds / 60);
+    const seconds = quoteTimerSeconds % 60;
+    document.getElementById('quoteTimer').textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    if (quoteTimerSeconds <= 0) {
+      updateQuote();
+      quoteTimerSeconds = 120; // Reset to 2 minutes
+    }
+  }, 1000);
+}
+
+function startJokeTimer() {
+  clearInterval(jokeInterval);
+  
+  // Update joke immediately
+  updateJoke();
+  
+  jokeInterval = setInterval(() => {
+    jokeTimerSeconds--;
+    
+    if (jokeTimerSeconds <= 0) {
+      updateJoke();
+      jokeTimerSeconds = 86400; // Reset to 24 hours
+    }
+  }, 1000);
+}
+
+function speakJoke() {
+  const joke = document.getElementById('jokeText').textContent;
+  const speech = new SpeechSynthesisUtterance(joke);
+  speech.rate = 0.9;
+  speech.pitch = 1;
+  speech.volume = 1;
+  window.speechSynthesis.speak(speech);
+  addActivity('Listened to joke', 'music');
+}
+
+function speakCurrentContent() {
+  const quote = document.getElementById('quoteText').textContent;
+  const joke = document.getElementById('jokeText').textContent;
+  const text = `Quote: ${quote}. And here's a joke for you: ${joke}`;
+  
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.rate = 0.9;
+  speech.pitch = 1;
+  speech.volume = 1;
+  window.speechSynthesis.speak(speech);
+  addActivity('Listened to daily inspiration', 'music');
+}
+
+// ==================== MOOD TRACKING SYSTEM ====================
+function analyzeChatbotMessageForMood(message) {
+  const lowerMsg = message.toLowerCase();
+  let detectedMood = null;
+  
+  // Sad keywords
+  if (lowerMsg.includes('sad') || lowerMsg.includes('depressed') || lowerMsg.includes('unhappy') || 
+      lowerMsg.includes('crying') || lowerMsg.includes('miserable') || lowerMsg.includes('lonely') ||
+      lowerMsg.includes('heartbroken') || lowerMsg.includes('hopeless') || lowerMsg.includes('empty')) {
+    detectedMood = 1;
+  } 
+  // Anxious/Neutral keywords
+  else if (lowerMsg.includes('anxious') || lowerMsg.includes('worried') || lowerMsg.includes('nervous') ||
+             lowerMsg.includes('stressed') || lowerMsg.includes('overwhelmed') || lowerMsg.includes('panic') ||
+             lowerMsg.includes('scared') || lowerMsg.includes('fear') || lowerMsg.includes('tense')) {
+    detectedMood = 2;
+  }
+  // Happy keywords
+  else if (lowerMsg.includes('happy') || lowerMsg.includes('good') || lowerMsg.includes('great') ||
+             lowerMsg.includes('joy') || lowerMsg.includes('excited') || lowerMsg.includes('amazing') ||
+             lowerMsg.includes('wonderful') || lowerMsg.includes('fantastic') || lowerMsg.includes('delighted')) {
+    detectedMood = 3;
+  }
+  // Great/Excellent keywords
+  else if (lowerMsg.includes('excellent') || lowerMsg.includes('awesome') || lowerMsg.includes('perfect') ||
+             lowerMsg.includes('ecstatic') || lowerMsg.includes('thrilled') || lowerMsg.includes('blissful') ||
+             lowerMsg.includes('overjoyed') || lowerMsg.includes('euphoric') || lowerMsg.includes('jubilant')) {
+    detectedMood = 4;
+  }
+  // Neutral keywords
+  else if (lowerMsg.includes('okay') || lowerMsg.includes('fine') || lowerMsg.includes('alright') ||
+             lowerMsg.includes('neutral') || lowerMsg.includes('meh') || lowerMsg.includes('so-so') ||
+             lowerMsg.includes('average') || lowerMsg.includes('normal') || lowerMsg.includes('regular')) {
+    detectedMood = 2;
+  }
+  
+  return detectedMood;
+}
+
+function logMood(moodValue, source = 'manual') {
+  const moodMap = {
+    1: { emoji: '😢', label: 'Sad', color: '#ff6b6b', description: 'Feeling down or unhappy' },
+    2: { emoji: '😐', label: 'Neutral', color: '#ffd93d', description: 'Feeling okay, neither happy nor sad' },
+    3: { emoji: '😊', label: 'Happy', color: '#6bcf7f', description: 'Feeling good and positive' },
+    4: { emoji: '😁', label: 'Great', color: '#4d96ff', description: 'Feeling excellent and joyful' }
+  };
+  
+  const mood = moodMap[moodValue];
+  
+  // Update display
+  document.getElementById('currentMoodEmoji').textContent = mood.emoji;
+  document.getElementById('currentMoodLabel').textContent = mood.label;
+  document.getElementById('moodEmoji').textContent = mood.emoji;
+  document.getElementById('moodText').textContent = mood.description;
+  document.getElementById('moodSource').textContent = source === 'chatbot' ? 
+    'Based on chatbot conversation' : 'Based on manual selection';
+  
+  // Update chart
+  updateMoodChartData(moodValue, source);
+  
+  // Save to storage
+  saveMoodToStorage(moodValue, source);
+  
+  // Add to activity feed
+  const sourceText = source === 'chatbot' ? 'from chatbot analysis' : 'manually';
+  addActivity(`Mood logged: ${mood.label} ${mood.emoji} ${sourceText}`, 'mood');
+  
+  // Update mood selector
+  document.querySelectorAll('.mood-option').forEach(option => {
+    option.classList.remove('selected');
+    if (parseInt(option.getAttribute('data-mood')) === moodValue) {
+      option.classList.add('selected');
+    }
+  });
+  
+  // Update mood history
+  updateMoodHistory();
+}
+
+function updateMoodChartData(moodValue, source) {
+  if (!window.moodChart) return;
+  
+  const chart = window.moodChart;
+  const labels = chart.data.labels;
+  const data = chart.data.datasets[0].data;
+  
+  // Add new data point
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  
+  // Add new point
+  labels.push(timeStr);
+  data.push(moodValue);
+  
+  // Keep only last 8 points
+  if (labels.length > 8) {
+    labels.shift();
+    data.shift();
+  }
+  
+  chart.update('active');
+}
+
+function saveMoodToStorage(mood, source) {
+  const moodData = {
+    mood: mood,
+    source: source,
+    timestamp: new Date().toISOString(),
+    emoji: ['😢', '😐', '😊', '😁'][mood - 1]
+  };
+  
+  // Save to localStorage
+  let allMoods = JSON.parse(localStorage.getItem('allMoods') || '[]');
+  allMoods.push(moodData);
+  localStorage.setItem('allMoods', JSON.stringify(allMoods));
+  
+  // Send to backend
+  fetch('/api/save_mood', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(moodData)
+  }).catch(error => console.error('Error saving mood:', error));
+}
+
+// Mood History - FIXED EMOJI DISPLAY
+function updateMoodHistory() {
+  const historyDiv = document.getElementById('moodHistory');
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const moodEmojis = ['😢', '😐', '😊', '😁'];
+  const moodLabels = ['Sad', 'Neutral', 'Happy', 'Great'];
+  const moodColors = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff'];
+  
+  historyDiv.innerHTML = '';
+  
+  // Get mood history from localStorage
+  let allMoods = JSON.parse(localStorage.getItem('allMoods') || '[]');
+  
+  // Fill last 7 days
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toDateString();
+    const dayName = days[date.getDay()];
+    
+    // Get moods for this day
+    const dayMoods = allMoods.filter(m => {
+      const moodDate = new Date(m.timestamp).toDateString();
+      return moodDate === dateStr;
+    });
+    
+    // Calculate average mood
+    let averageMood = 3; // Default to Happy
+    if (dayMoods.length > 0) {
+      const sum = dayMoods.reduce((acc, mood) => acc + mood.mood, 0);
+      averageMood = Math.round(sum / dayMoods.length);
+    }
+    
+    const moodEmoji = moodEmojis[averageMood - 1];
+    const moodLabel = moodLabels[averageMood - 1];
+    const moodColor = moodColors[averageMood - 1];
+    
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'mood-day';
+    dayDiv.innerHTML = `
+      <div class="mood-day-emoji">${moodEmoji}</div>
+      <div class="mood-day-label">${dayName}</div>
+      <div class="mood-day-score" style="color: ${moodColor}">${moodLabel}</div>
+    `;
+    historyDiv.appendChild(dayDiv);
+  }
+}
+
+// ==================== SAVE REFLECTION ====================
+function saveReflection() {
+  const text = document.getElementById('reflectionText').value.trim();
+  if (!text) {
+    alert('Please write something first!');
+    return;
+  }
+  
+  const reflection = {
+    text: text,
+    date: new Date().toISOString(),
+    mood: currentMood,
+    mood_emoji: ['😢', '😐', '😊', '😁'][currentMood - 1]
+  };
+  
+  displayReflection(reflection);
+  document.getElementById('reflectionText').value = '';
+  
+  // Save to localStorage
+  let reflections = JSON.parse(localStorage.getItem('reflections') || '[]');
+  reflections.unshift(reflection);
+  if (reflections.length > 10) reflections = reflections.slice(0, 10);
+  localStorage.setItem('reflections', JSON.stringify(reflections));
+  
+  // Send to backend
+  fetch('/api/save_reflection', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(reflection)
+  }).then(() => {
+    addActivity('Saved daily reflection', 'heart');
+  }).catch(error => console.error('Error saving reflection:', error));
+}
+
+function displayReflection(reflection) {
+  const container = document.getElementById('savedReflections');
+  
+  const item = document.createElement('div');
+  item.className = 'reflection-item';
+  
+  const date = new Date(reflection.date);
+  const dateStr = date.toLocaleDateString('en-US', { 
+    weekday: 'short', 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  
+  item.innerHTML = `
+    <div class="reflection-date">
+      <i class="far fa-calendar"></i> ${dateStr} • Mood: ${reflection.mood_emoji}
+    </div>
+    <div class="reflection-content">${reflection.text}</div>
+  `;
+  
+  // Insert after "Recent Reflections" heading
+  const heading = container.querySelector('h4');
+  if (heading && heading.nextSibling) {
+    container.insertBefore(item, heading.nextSibling);
+  } else {
+    container.appendChild(item);
+  }
+  
+  // Limit to 5 reflections visible
+  const reflections = container.querySelectorAll('.reflection-item');
+  if (reflections.length > 5) {
+    container.removeChild(reflections[reflections.length - 1]);
+  }
+}
+
+function loadReflections() {
+  let reflections = JSON.parse(localStorage.getItem('reflections') || '[]');
+  reflections.forEach(displayReflection);
+}
+
+// ==================== DOCTOR RECOMMENDATIONS ====================
+function loadDoctors() {
+  const container = document.getElementById('doctorsList');
+  container.innerHTML = '';
+  
+  doctorsDatabase.forEach(doctor => {
+    const doctorDiv = document.createElement('div');
+    doctorDiv.className = 'doctor-item';
+    
+    const initials = doctor.name.split(' ').map(n => n[0]).join('');
+    const areas = doctor.areas.slice(0, 3).join(' • ');
+    
+    doctorDiv.innerHTML = `
+      <div class="doctor-header">
+        <div class="doctor-avatar">${initials}</div>
+        <div class="doctor-info">
+          <div class="doctor-name">${doctor.name}</div>
+          <div class="doctor-specialization">${doctor.specialization}</div>
+          <div class="doctor-hospital">${doctor.hospital}</div>
+        </div>
+      </div>
+      <div class="doctor-details">
+        <div class="doctor-detail">
+          <i class="fas fa-star"></i>
+          <span>${doctor.rating}/5</span>
+        </div>
+        <div class="doctor-detail">
+          <i class="fas fa-briefcase"></i>
+          <span>${doctor.experience}</span>
+        </div>
+        <div class="doctor-detail">
+          <i class="fas fa-phone"></i>
+          <span>${doctor.phone}</span>
+        </div>
+        <div class="doctor-detail">
+          <i class="fas fa-envelope"></i>
+          <span>${doctor.contact}</span>
+        </div>
+      </div>
+      <div style="margin-top: 10px; color: rgba(232, 244, 248, 0.7); font-size: 0.9rem;">
+        <i class="fas fa-stethoscope"></i> Specializes in: ${areas}
+      </div>
+      <div style="margin-top: 15px; text-align: center;">
+        <button class="btn" style="background: var(--doctor-color);" onclick="contactDoctor(${doctor.id})">
+          <i class="fas fa-calendar-check"></i> Contact for Appointment
+        </button>
+      </div>
+    `;
+    
+    container.appendChild(doctorDiv);
+  });
+}
+
+
+
+
+function contactDoctor(doctorId) {
+  const doctor = doctorsDatabase.find(d => d.id === doctorId);
+  if (!doctor) return;
+  
+  alert(`Contact Information for Dr. ${doctor.name}:\n\nEmail: ${doctor.contact}\nPhone: ${doctor.phone}\n\nPlease contact them directly to schedule an appointment.`);
+  addActivity(`Contacted ${doctor.name} for appointment`, 'doctor');
+}
+
+// ==================== ACTIVITY FEED ====================
+function addActivity(text, type = 'info') {
+  const feed = document.getElementById('activityFeed');
+  const icons = {
+    'mood': 'fas fa-smile',
+    'heart': 'fas fa-heart',
+    'user': 'fas fa-user',
+    'chat': 'fas fa-comment',
+    'info': 'fas fa-info-circle',
+    'music': 'fas fa-music',
+    'emergency': 'fas fa-first-aid',
+    'doctor': 'fas fa-user-md',
+    'gamepad': 'fas fa-gamepad'
+  };
+  
+  const activity = document.createElement('div');
+  activity.className = 'activity-item';
+  activity.innerHTML = `
+    <div class="activity-icon"><i class="${icons[type] || 'fas fa-info-circle'}"></i></div>
+    <div class="activity-content">
+      <div>${text}</div>
+      <div class="activity-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+    </div>
+  `;
+  
+  feed.insertBefore(activity, feed.firstChild);
+  
+  // Limit to 15 activities
+  if (feed.children.length > 15) {
+    feed.removeChild(feed.lastChild);
+  }
+}
+
+function clearActivities() {
+  const feed = document.getElementById('activityFeed');
+  feed.innerHTML = '';
+  addActivity('Cleared all activities', 'info');
+}
+
+// ==================== EMERGENCY FUNCTIONS ====================
+function callEmergency(number) {
+  if (confirm(`Call ${number}? This will open your phone dialer.`)) {
+    window.location.href = `tel:${number}`;
+    addActivity('Called emergency helpline', 'emergency');
+  }
+}
+
+function openResources() {
+  const resources = [
+    { name: 'Crisis Text Line', url: 'https://www.crisistextline.org/' },
+    { name: 'Mental Health America', url: 'https://mhanational.org/' },
+    { name: 'SAMHSA Helpline', url: 'https://www.samhsa.gov/find-help/national-helpline' },
+    { name: 'Suicide Prevention Lifeline', url: 'https://suicidepreventionlifeline.org/' }
+  ];
+  
+  let resourceList = "📞 Emergency Resources:\n\n";
+  resources.forEach(res => {
+    resourceList += `• ${res.name}\n  ${res.url}\n\n`;
+  });
+  
+  alert(resourceList);
+  addActivity('Viewed emergency resources', 'emergency');
+}
+
+// ==================== MUSIC PLAYER ====================
+function playMusic(type) {
+  const playlists = {
+    calm: 'https://www.youtube.com/watch?v=DYj83Qz3Nv4',
+    focus: 'https://www.youtube.com/watch?v=4N3N1MlvVc4',
+    sleep: 'https://www.youtube.com/watch?v=1ZYbU82GVz4'
+  };
+  
+  window.open(playlists[type], '_blank');
+  addActivity(`Started ${type} music`, 'music');
+}
+
+// ==================== MIND RELAXING GAME ====================
+function initializeGame() {
+  const gameGrid = document.getElementById('gameGrid');
+  gameGrid.innerHTML = '';
+  
+  // Create pairs of emojis (use 8 pairs for 4x4 grid)
+  let gameEmojis = emojiPairs.slice(0, 8);
+  let emojis = [...gameEmojis, ...gameEmojis];
+  
+  // Shuffle emojis
+  emojis = emojis.sort(() => Math.random() - 0.5);
+  
+  // Create game cells
+  emojis.forEach((emoji, index) => {
+    const cell = document.createElement('div');
+    cell.className = 'game-cell';
+    cell.dataset.emoji = emoji;
+    cell.dataset.index = index;
+    cell.innerHTML = '❓';
+    cell.onclick = () => selectCell(cell);
+    gameGrid.appendChild(cell);
+  });
+  
+  // Reset game stats
+  gameMoves = 0;
+  gameMatches = 0;
+  gameTime = 60;
+  selectedCells = [];
+  matchedCells = [];
+  
+  document.getElementById('movesCount').textContent = gameMoves;
+  document.getElementById('matchesCount').textContent = gameMatches;
+  document.getElementById('timer').textContent = gameTime;
+  
+  // Start game timer
+  if (gameInterval) clearInterval(gameInterval);
+  gameInterval = setInterval(() => {
+    gameTime--;
+    document.getElementById('timer').textContent = gameTime;
+    
+    if (gameTime <= 0) {
+      clearInterval(gameInterval);
+      alert('Time\'s up! Game over. 😅');
+      addActivity('Played memory matching game', 'gamepad');
+    }
+  }, 1000);
+}
+
+function selectCell(cell) {
+  if (matchedCells.includes(cell.dataset.index) || selectedCells.includes(cell)) {
+    return;
+  }
+  
+  if (selectedCells.length < 2) {
+    cell.classList.add('selected');
+    cell.textContent = cell.dataset.emoji;
+    selectedCells.push(cell);
+    
+    if (selectedCells.length === 2) {
+      gameMoves++;
+      document.getElementById('movesCount').textContent = gameMoves;
+      
+      setTimeout(() => {
+        checkMatch();
+      }, 500);
+    }
+  }
+}
+
+function checkMatch() {
+  const [cell1, cell2] = selectedCells;
+  
+  if (cell1.dataset.emoji === cell2.dataset.emoji) {
+    // Match found
+    cell1.classList.remove('selected');
+    cell2.classList.remove('selected');
+    cell1.classList.add('matched');
+    cell2.classList.add('matched');
+    
+    matchedCells.push(cell1.dataset.index, cell2.dataset.index);
+    gameMatches++;
+    document.getElementById('matchesCount').textContent = gameMatches;
+    
+    // Check if all matches found
+    if (matchedCells.length === 16) { // 8 pairs * 2
+      clearInterval(gameInterval);
+      setTimeout(() => {
+        alert(`🎉 Congratulations! You won in ${gameMoves} moves with ${60 - gameTime} seconds remaining!`);
+        addActivity('Won the memory matching game! 🎮', 'gamepad');
+      }, 500);
+    }
+  } else {
+    // No match
+    cell1.classList.remove('selected');
+    cell2.classList.remove('selected');
+    cell1.textContent = '❓';
+    cell2.textContent = '❓';
+  }
+  
+  selectedCells = [];
+}
+
+function resetGame() {
+  clearInterval(gameInterval);
+  initializeGame();
+  addActivity('Started a new memory game', 'gamepad');
+}
+
+// ==================== CHAT FUNCTIONS ====================
+function openChat() {
+  document.getElementById('chatModal').style.display = 'flex';
+  document.getElementById('chatInput').focus();
+  initializeChatbot();
+}
+
+function closeChat() {
+  document.getElementById('chatModal').style.display = 'none';
+}
+
+function appendBubble(sender, text) {
+  const area = document.getElementById('chatArea');
+  const b = document.createElement('div');
+  b.className = 'bubble ' + (sender === 'user' ? 'user' : 'bot');
+  
+  if (sender === 'bot') {
+    b.innerHTML = `
+      <div class="bot-avatar">
+        <i class="fas fa-robot"></i>
+      </div>
+      <div>${text}</div>
+    `;
+  } else {
+    b.innerHTML = text;
+  }
+  
+  area.appendChild(b);
+  area.scrollTop = area.scrollHeight;
+  
+  chatHistory.push({ sender: sender, text: text, timestamp: new Date() });
+}
+
+function initializeChatbot() {
+  const chatArea = document.getElementById('chatArea');
+  chatArea.innerHTML = '';
+  
+  appendBubble('bot', "Hello! I'm your mental health assistant. 👋 How are you feeling today? You can type or use voice to talk to me. I'll track your mood based on our conversation!");
+}
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  
+  if (!message) {
+    input.focus();
+    return;
+  }
+  
+  // Add user message
+  appendBubble('user', message);
+  addActivity('Sent message to chatbot', 'chat');
+  
+  // Analyze message for mood BEFORE sending to chatbot
+  const detectedMood = analyzeChatbotMessageForMood(message);
+  if (detectedMood !== null) {
+    logMood(detectedMood, 'chatbot');
+  }
+  
+  // Show typing indicator
+  const typingBubble = document.createElement('div');
+  typingBubble.className = 'bubble bot';
+  typingBubble.innerHTML = `
+    <div class="bot-avatar">
+      <i class="fas fa-robot"></i>
+    </div>
+    <div>
+      <span class="typing-indicator">
+        <span></span><span></span><span></span>
+      </span>
+    </div>
+  `;
+  document.getElementById('chatArea').appendChild(typingBubble);
+  document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
+  
+  // Send to YOUR CHATBOT BACKEND
+  fetch('{{ url_for("api_chat") }}', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message: message })
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Remove typing indicator
+    const chatArea = document.getElementById('chatArea');
+    if (chatArea.lastChild === typingBubble) {
+      chatArea.removeChild(typingBubble);
+    }
+    
+    // Add bot response
+    if (data.reply) {
+      appendBubble('bot', data.reply);
+      
+      // Text-to-speech for bot response
+      if (data.reply && typeof data.reply === 'string') {
+        speakText(data.reply);
+      }
+    }
+    
+    // Clear input
+    input.value = '';
+    input.focus();
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    // Remove typing indicator
+    const chatArea = document.getElementById('chatArea');
+    if (chatArea.lastChild === typingBubble) {
+      chatArea.removeChild(typingBubble);
+    }
+    
+    // Fallback response
+    appendBubble('bot', "I'm having trouble connecting right now. Please try again in a moment.");
+    input.value = '';
+  });
+}
+
+function speakText(text) {
+  if ('speechSynthesis' in window) {
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.rate = 0.9;
+    speech.pitch = 1;
+    speech.volume = 1;
+    window.speechSynthesis.speak(speech);
+  }
+}
+
+// ==================== INITIALIZE EVERYTHING ====================
+document.addEventListener('DOMContentLoaded', function() {
+  // Load avatar
+  loadAvatar();
+  
+  // Setup avatar synchronization
+  setupAvatarSync();
+  
+  // Initialize mood chart
+  initializeMoodChart();
+  
+  // Load reflections
+  loadReflections();
+  
+  // Load doctors
+  loadDoctors();
+  
+  // Initialize game
+  initializeGame();
+  
+  // Start timers
+  startQuoteTimer();
+  startJokeTimer();
+  
+  // Update mood history
+  updateMoodHistory();
+  
+  // Add initial activities
+  addActivity('Welcome to your mental health dashboard!', 'info');
+  addActivity('Your mood chart is ready to track your emotions', 'mood');
+  addActivity('Try the meditation exercises for relaxation', 'heart');
+  addActivity('Game loaded - try memory matching!', 'gamepad');
+  
+  // Set current mood based on localStorage
+  let allMoods = JSON.parse(localStorage.getItem('allMoods') || '[]');
+  if (allMoods.length > 0) {
+    const latestMood = allMoods[allMoods.length - 1];
+    logMood(latestMood.mood, latestMood.source);
+  }
+  
+  // Set up Enter key for chat
+  document.getElementById('chatInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendChat();
+    }
+  });
+  
+  // Initialize chatbot
+  initializeChatbot();
+});
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const chatModal = document.getElementById('chatModal');
+  if (event.target === chatModal) {
+    closeChat();
+  }
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    :root {
+      --primary-color: #8BC6EC;
+      --secondary-color: #2c3e50;
+      --background-color: rgba(255, 255, 255, 0.05);
+      --text-color: #e8f4f8;
+      --button-color: #7db9e0;
+      --button-text-color: #2c3e50;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --header-bg: rgba(44, 62, 80, 0.3);
+      --animation-speed: 0.5s;
+    }
+
+    body {
+      background: linear-gradient(rgba(25, 42, 86, 0.85), rgba(19, 32, 67, 0.9)), 
+                  url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 40px 20px;
+      font-size: 16px;
+      overflow-x: hidden;
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Animated background elements */
+    .floating-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .floating-element {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(139, 198, 236, 0.03);
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .floating-element:nth-child(1) {
+      width: 120px;
+      height: 120px;
+      top: 15%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .floating-element:nth-child(2) {
+      width: 80px;
+      height: 80px;
+      top: 70%;
+      left: 85%;
+      animation-delay: 5s;
+    }
+
+    .floating-element:nth-child(3) {
+      width: 60px;
+      height: 60px;
+      top: 50%;
+      left: 15%;
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.3;
+      }
+      33% {
+        transform: translateY(-15px) rotate(120deg);
+        opacity: 0.1;
+      }
+      66% {
+        transform: translateY(8px) rotate(240deg);
+        opacity: 0.2;
+      }
+    }
+
+    /* Profile Card */
+    .profile-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      width: 100%;
+      max-width: 500px;
+      animation: fadeInUp 0.8s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(139, 198, 236, 0.02), transparent);
+      transform: rotate(45deg);
+      animation: shine 12s infinite linear;
+      pointer-events: none;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .profile-card h3 {
+      color: var(--text-color);
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+      text-align: center;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      position: relative;
+    }
+
+    .profile-card h3::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 2px;
+      background: var(--primary-color);
+      border-radius: 2px;
+    }
+
+    /* Form Elements */
+    .profile-card form {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .profile-card input {
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-color);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .profile-card input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 2px rgba(139, 198, 236, 0.1);
+    }
+
+    .profile-card input::placeholder {
+      color: rgba(232, 244, 248, 0.5);
+    }
+
+    /* File Upload Styling */
+    .file-upload-container {
+      position: relative;
+      margin: 10px 0;
+    }
+
+    .file-upload-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .file-upload-label:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--primary-color);
+    }
+
+    .file-upload-label i {
+      color: var(--primary-color);
+      font-size: 1.2rem;
+    }
+
+    .file-upload-input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-name {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: rgba(232, 244, 248, 0.7);
+      padding-left: 5px;
+    }
+
+    /* Avatar Preview */
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .avatar-preview:hover {
+      border-color: var(--primary-color);
+      transform: scale(1.05);
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-preview i {
+      font-size: 2.5rem;
+      color: rgba(232, 244, 248, 0.5);
+    }
+
+    .avatar-preview::after {
+      content: 'Change Avatar';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(44, 62, 80, 0.8);
+      color: var(--text-color);
+      text-align: center;
+      padding: 5px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .avatar-preview:hover::after {
+      opacity: 1;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 32px;
+      background: var(--button-color);
+      color: var(--button-text-color);
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(125, 185, 224, 0.2);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      width: 100%;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover {
+      background: #8BC6EC;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(125, 185, 224, 0.3);
+    }
+
+    .btn i {
+      margin-right: 10px;
+    }
+
+    /* Back Link */
+    .back-link {
+      text-align: center;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .back-link a {
+      color: var(--text-color);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      padding: 10px 20px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.8;
+    }
+
+    .back-link a:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-1px);
+    }
+
+    /* Success Message */
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 500;
+      animation: fadeIn 0.5s ease-out;
+      display: none;
+    }
+
+    .message.success {
+      background: rgba(46, 204, 113, 0.15);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      color: #2ecc71;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Profile Stats */
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin: 25px 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 15px;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: rgba(232, 244, 248, 0.7);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 15px;
+      }
+      
+      .profile-card {
+        padding: 30px 25px;
+      }
+      
+      .profile-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      
+      .avatar-preview {
+        width: 100px;
+        height: 100px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .profile-card {
+        padding: 25px 20px;
+      }
+      
+      .profile-card h3 {
+        font-size: 1.5rem;
+      }
+      
+      .avatar-preview {
+        width: 80px;
+        height: 80px;
+      }
+      
+      .avatar-preview i {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-elements">
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+  </div>
+
+  <div class="card profile-card">
+    <h3><i class="fas fa-user-circle"></i> Your Profile</h3>
+    
+    <!-- Avatar Preview -->
+    <div class="avatar-preview" id="avatarPreview">
+      <i class="fas fa-user"></i>
+      <!-- If user has avatar, it would be displayed here -->
+    </div>
+
+    <!-- Success Message -->
+    <div id="message" class="message"></div>
+
+    <form method="POST" enctype="multipart/form-data" id="profileForm">
+      <input name="name" value="{{ user['name'] }}" placeholder="Your Name" required>
+      
+      <!-- Enhanced File Upload -->
+      <div class="file-upload-container">
+        <label class="file-upload-label">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <span>Choose Avatar Image</span>
+          <input name="avatar" type="file" class="file-upload-input" id="avatarInput" accept="image/*">
+        </label>
+        <div class="file-name" id="fileName">No file chosen</div>
+      </div>
+
+      <!-- Profile Stats (Optional) -->
+      <div class="profile-stats">
+        <div class="stat-item">
+          <div class="stat-value">15</div>
+          <div class="stat-label">Sessions</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">87%</div>
+          <div class="stat-label">Progress</div>
+        </div>
+      </div>
+
+      <button class="btn" type="submit">
+        <i class="fas fa-save"></i> Save Changes
+      </button>
+    </form>
+
+    <div class="back-link">
+      <a href="{{ url_for('dashboard') }}">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // File input handling
+    document.getElementById('avatarInput').addEventListener('change', function(e) {
+      const fileName = document.getElementById('fileName');
+      const avatarPreview = document.getElementById('avatarPreview');
+      
+      if (this.files && this.files[0]) {
+        fileName.textContent = this.files[0].name;
+        
+        // Preview image
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar Preview">`;
+        }
+        reader.readAsDataURL(this.files[0]);
+      } else {
+        fileName.textContent = 'No file chosen';
+        avatarPreview.innerHTML = '<i class="fas fa-user"></i>';
+      }
+    });
+
+    // Form submission with feedback
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const message = document.getElementById('message');
+      message.textContent = 'Profile updated successfully!';
+      message.className = 'message success';
+      message.style.display = 'block';
+      
+      // Simulate API call
+      setTimeout(() => {
+        // Here you would normally submit the form
+        // For demo purposes, we'll just show success message
+        message.textContent = 'Profile updated successfully!';
+        message.className = 'message success';
+        message.style.display = 'block';
+        
+        // Scroll to message
+        message.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 1000);
+    });
+
+    // Add some interactive elements
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate card on load
+      const card = document.querySelector('.profile-card');
+      card.style.animationPlayState = 'running';
+    });
+  </script>
+</body>
+</html>
